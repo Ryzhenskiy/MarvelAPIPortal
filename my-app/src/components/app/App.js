@@ -1,0 +1,63 @@
+import { lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+
+import AppHeader from '../appHeader/AppHeader';
+import Spinner from '../spinner/Spinner';
+
+const Page404 = lazy(() => import('../pages/404'));
+const MainPage = lazy(() => import('../pages/MainPage'));
+const ComicsPage = lazy(() => import('../pages/ComicsPage'));
+const SinglePage = lazy(() => import('../pages/SinglePage'));
+const SingleComicPageLayout = lazy(() =>
+  import('../pages/SingleComicPageLayout/SingleComicPageLayout')
+);
+const SingleCharacterPageLayout = lazy(() =>
+  import('../pages/SingleCharacterPageLayout/SingleCharacterPageLayout')
+);
+
+window.addEventListener('scroll', (e) => {
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  const scrolled = window.scrollY;
+  if (Math.ceil(scrolled) === scrollable) {
+    console.log('bottom');
+  }
+});
+const App = () => {
+  return (
+    <Router>
+      <div className="app">
+        <AppHeader />
+        <main>
+          <Suspense fallback={<Spinner />}>
+            <Routes>
+              <Route path="/" element={<MainPage />} />
+              <Route path="/comics" element={<ComicsPage />} />
+              <Route
+                path="/comics/:id"
+                element={
+                  <SinglePage
+                    Component={SingleComicPageLayout}
+                    dataType="comic"
+                  />
+                }
+              />
+
+              <Route
+                path="/characters/:id"
+                element={
+                  <SinglePage
+                    Component={SingleCharacterPageLayout}
+                    dataType="character"
+                  />
+                }
+              />
+              <Route path="*" element={<Page404 />} />
+            </Routes>
+          </Suspense>
+        </main>
+      </div>
+    </Router>
+  );
+};
+
+export default App;
